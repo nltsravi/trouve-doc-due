@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "TrouveDocDue",
+    "slug": "trouve-doc-due",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "trouvedocdue",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nltsravi.trouvedocdue",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "TrouveDocDue scans accessible photos on-device to discover personal documents and dates such as passport or insurance expiry. Processing stays completely local.",
+        "NSPhotoLibraryAddUsageDescription": "TrouveDocDue only saves document copies if you explicitly choose to store them."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0F172A",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "package": "com.nltsravi.trouvedocdue",
+      "permissions": [
+        "READ_MEDIA_IMAGES",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0F172A",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 80
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "TrouveDocDue scans accessible photos on your device to find personal documents and dates. Processing stays completely on your device.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Select photos from your gallery for document discovery."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#2563EB"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
