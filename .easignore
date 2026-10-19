@@ -46,3 +46,7 @@ example
 tests/
 coverage/
 jest.setup.js
+
+# marketing, docs & store media
+brand-assets/
+docs/

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Scaled and centered to fit within 66% (680px) safe zone for 108dp Android adaptive icons -->
+  <g transform="translate(512, 512) scale(0.82) translate(-572, -450)">
+    <!-- Back Document -->
+    <rect x="256" y="212" width="400" height="520" rx="48" fill="#0B65F5" opacity="0.9" />
+    
+    <!-- Front Document -->
+    <rect x="368" y="292" width="400" height="520" rx="48" fill="#FFFFFF" />
+    <rect x="448" y="380" width="240" height="32" rx="16" fill="#F5F8FC" />
+    <rect x="448" y="460" width="180" height="32" rx="16" fill="#F5F8FC" />
+    <rect x="448" y="540" width="200" height="32" rx="16" fill="#F5F8FC" />
+    
+    <!-- Teal Checkmark / Readiness -->
+    <circle cx="680" cy="720" r="80" fill="#17C3A3" />
+    <path d="M640 720l25 25 50-50" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- AI Discovery Sparkles -->
+    <path d="M768 180C768 220 808 260 848 260C808 260 768 300 768 340C768 300 728 260 688 260C728 260 768 220 768 180Z" fill="#17C3A3" />
+    <path d="M848 100C848 120 868 140 888 140C868 140 848 160 848 180C848 160 828 140 808 140C828 140 848 120 848 100Z" fill="#0B65F5" />
+  </g>
+</svg>

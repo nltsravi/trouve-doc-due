@@ -1,13 +1,15 @@
 export const Colors = {
   // Brand colors
-  primary: '#2563EB', // Blue 600
+  primary: '#0B65F5', // Electric Blue (Modern AI & interaction)
   primaryLight: '#3B82F6', // Blue 500
-  primaryDark: '#1D4ED8', // Blue 700
-  primaryGhost: 'rgba(37, 99, 235, 0.12)',
+  primaryDark: '#0848B3', // Deep Blue
+  primaryNavy: '#071B3A', // Primary Navy (Deep trust & security)
+  primaryGhost: 'rgba(11, 101, 245, 0.12)',
 
   // Accent & Status
-  success: '#10B981', // Emerald 500 (Valid, approved)
-  successLight: 'rgba(16, 185, 129, 0.15)',
+  tealAccent: '#17C3A3', // Teal Accent (Readiness & AI sparkles)
+  success: '#17C3A3', // Teal Accent (Valid, approved, readiness)
+  successLight: 'rgba(23, 195, 163, 0.15)',
   warning: '#F59E0B', // Amber 500 (Expiring soon, please verify)
   warningLight: 'rgba(245, 158, 11, 0.15)',
   danger: '#EF4444', // Red 500 (Overdue, expired, critical)
@@ -17,40 +19,40 @@ export const Colors = {
 
   // Dark Theme (Default premium look)
   dark: {
-    background: '#0B0F17', // Deep obsidian navy
-    card: '#131A26', // Rich slate navy
-    cardElevated: '#1E293B', // Slate 800
-    cardHover: '#243044',
-    border: '#1E293B',
-    borderSubtle: '#172033',
-    borderActive: '#3B82F6',
+    background: '#071B3A', // Brand Primary Navy
+    card: '#0D2245', // Rich slate navy card
+    cardElevated: '#132C54', // Elevated slate card
+    cardHover: '#1B3664',
+    border: '#1B3664',
+    borderSubtle: '#0F254B',
+    borderActive: '#0B65F5',
     text: '#F8FAFC',
     textSecondary: '#94A3B8',
     textMuted: '#64748B',
-    tint: '#3B82F6',
+    tint: '#0B65F5',
     tabIconDefault: '#64748B',
-    tabIconSelected: '#3B82F6',
-    surface: '#151D2C',
-    inputBackground: '#0F1622',
+    tabIconSelected: '#0B65F5',
+    surface: '#0D2245',
+    inputBackground: '#091A36',
   },
 
   // Light Theme
   light: {
-    background: '#F8FAFC',
+    background: '#F5F8FC', // Official Light Background
     card: '#FFFFFF',
-    cardElevated: '#F1F5F9',
-    cardHover: '#E2E8F0',
-    border: '#E2E8F0',
-    borderSubtle: '#EDF2F7',
-    borderActive: '#2563EB',
-    text: '#0F172A',
-    textSecondary: '#475569',
+    cardElevated: '#EDF2F9',
+    cardHover: '#E2EAF4',
+    border: '#E2EAF4',
+    borderSubtle: '#EDF2F9',
+    borderActive: '#0B65F5',
+    text: '#10213D', // Primary Text
+    textSecondary: '#64748B', // Secondary Text
     textMuted: '#94A3B8',
-    tint: '#2563EB',
+    tint: '#0B65F5',
     tabIconDefault: '#94A3B8',
-    tabIconSelected: '#2563EB',
+    tabIconSelected: '#0B65F5',
     surface: '#FFFFFF',
-    inputBackground: '#F1F5F9',
+    inputBackground: '#EDF2F9',
   },
 };
 

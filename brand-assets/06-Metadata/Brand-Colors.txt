@@ -1,0 +1,41 @@
+TroveDocDue — Official Brand Color Palette System
+
+1. Primary Navy
+   - Hex: #071B3A
+   - RGB: rgb(7, 27, 58)
+   - Usage: Primary branding backgrounds, headers, iOS icon base, Android adaptive background, critical headings.
+
+2. Electric Blue
+   - Hex: #0B65F5
+   - RGB: rgb(11, 101, 245)
+   - Usage: AI processing highlights, primary interactive buttons, back document accent, focus rings.
+
+3. Teal Accent
+   - Hex: #17C3A3
+   - RGB: rgb(23, 195, 163)
+   - Usage: Readiness, approved documents, valid status pills, AI discovery sparkle, positive confirmation.
+
+4. Light Background
+   - Hex: #F5F8FC
+   - RGB: rgb(245, 248, 252)
+   - Usage: Clean off-white app background, document placeholder lines, screenshot backdrops.
+
+5. White
+   - Hex: #FFFFFF
+   - RGB: rgb(255, 255, 255)
+   - Usage: Surface color for document cards, foreground text on dark backgrounds.
+
+6. Primary Text
+   - Hex: #10213D
+   - RGB: rgb(16, 33, 61)
+   - Usage: High-contrast body text for readability.
+
+7. Secondary Text
+   - Hex: #64748B
+   - RGB: rgb(100, 116, 139)
+   - Usage: Muted slate for metadata, expiry dates, subtitles, supplementary UI text.
+
+Typography:
+- Family: Inter (Rasmus Andersson, OFL License)
+- TroveDoc: Inter Bold (#071B3A or #FFFFFF)
+- Due: Inter Regular (#0B65F5 or #17C3A3)

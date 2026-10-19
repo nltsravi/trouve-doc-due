@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;display=swap');
+      .bold { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 84px; fill: #FFFFFF; }
+      .regular { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-weight: 400; font-size: 84px; fill: #17C3A3; }
+    </style>
+  </defs>
+  <text x="50" y="130" class="bold">TroveDoc<tspan class="regular">Due</tspan></text>
+</svg>

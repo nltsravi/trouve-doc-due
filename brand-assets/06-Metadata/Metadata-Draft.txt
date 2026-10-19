@@ -1,0 +1,32 @@
+App Name: TroveDocDue
+Primary Tagline: Find. Organize. Never Miss.
+
+Short Description (Google Play - 80 chars max):
+Find important documents in your gallery, track details, and never miss a due date.
+
+Promotional Text (Apple App Store - 170 chars max):
+The intelligent way to organize your life. TroveDocDue scans your photos for vital documents, extracts expiry dates, and sets smart reminders—all under your control.
+
+Full Description:
+Meet TroveDocDue, your AI-powered personal document assistant. Stop digging through thousands of photos to find your driver's license, passport, or insurance papers.
+
+Key Features:
+• 🔍 Smart Gallery Discovery: Automatically detects personal documents already in your photo library.
+• 🧠 100% On-Device Intelligence: Powered by Google ML Kit OCR running entirely on your smartphone.
+• 🛡️ Zero-Cloud Storage Guarantee: Your photos and personal data NEVER leave your device. No cloud servers, no third-party tracking.
+• ✅ Explicit User Review & Approval: No record is added to your secure local vault until you verify and approve the detected details.
+• ⏰ Intelligent Renewal Reminders: Automatically schedules notification alerts 30, 14, and 7 days before your documents expire.
+• 🔒 Read-Only Photo Access: Your original photos are never modified, moved, or deleted.
+
+Supported Documents:
+- Passports & Travel Visas
+- Driver's Licences & National ID Cards
+- Vehicle & Health Insurance Policies
+- Vehicle Registrations & Inspection Certificates
+- Certifications, Memberships & Leases
+
+Privacy Consideration:
+TroveDocDue requires access to your photo gallery solely for the purpose of identifying document images on your device. All processing is strictly local.
+
+Keywords:
+document scanner, ID organizer, expiry reminder, renewal tracker, photo scanner, AI document, wallet, passport tracker, licence renewal, on-device OCR

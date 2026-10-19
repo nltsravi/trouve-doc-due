@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="54"
+        android:translateY="54"
+        android:scaleX="0.086"
+        android:scaleY="0.086">
+        <group
+            android:translateX="-572"
+            android:translateY="-450">
+            <!-- Back Doc -->
+            <path
+                android:fillColor="#99FFFFFF"
+                android:pathData="M304,212h304c26.5,0 48,21.5 48,48v424c0,26.5 -21.5,48 -48,48h-304c-26.5,0 -48,-21.5 -48,-48v-424c0,-26.5 21.5,-48 48,-48z"/>
+            <!-- Front Doc -->
+            <path
+                android:fillColor="#FFFFFFFF"
+                android:pathData="M416,292h304c26.5,0 48,21.5 48,48v424c0,26.5 -21.5,48 -48,48h-304c-26.5,0 -48,-21.5 -48,-48v-424c0,-26.5 21.5,-48 48,-48z"/>
+            <!-- Checkmark Circle -->
+            <path
+                android:fillColor="#FFFFFFFF"
+                android:pathData="M680,720m-80,0a80,80 0 1,0 160,0a80,80 0 1,0 -160,0"/>
+            <path
+                android:strokeColor="#FF071B3A"
+                android:strokeWidth="24"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:pathData="M640,720l25,25l50,-50"/>
+        </group>
+    </group>
+</vector>
