@@ -13,6 +13,7 @@ import { GalleryPermissionState } from '../../types/permission';
 import { getGalleryPermissionState } from '../../services/gallery/galleryService';
 import { countPendingCandidates } from '../../services/storage/candidatesRepo';
 import { getLatestScanSessions } from '../../services/storage/sessionsRepo';
+import { hasAcceptedTermsAndPrivacy } from '../../services/privacy/consentService';
 import { Colors, Radius, Spacing, Typography } from '../../theme/colors';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
@@ -44,7 +45,14 @@ export default function FindDocsScreen() {
     }, [loadStatus])
   );
 
-  const handleStartScan = () => {
+  const handleStartScan = async () => {
+    // Before scanning or accessing gallery discovery, user must accept Privacy Policy & Terms
+    const hasAgreed = await hasAcceptedTermsAndPrivacy();
+    if (!hasAgreed) {
+      router.push('/scan-intro');
+      return;
+    }
+
     // If permission has not yet been granted or consented for whole gallery, open the Consent & Privacy screen
     if (selectedMode !== 'selected' && (!permission || !permission.granted)) {
       router.push('/scan-intro');

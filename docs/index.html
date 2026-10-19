@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trouvé DocDue - On-Device Document Discovery & Renewal Tracker</title>
+  <meta name="description" content="Find documents you already have. Extract the dates that matter. Never miss a renewal. 100% on-device OCR, zero cloud storage.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-link">
+        <div class="brand-icon">🛡️</div>
+        <span>Trouvé DocDue</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link active">Overview</a>
+        <a href="privacy.html" class="nav-link">Privacy Policy</a>
+        <a href="terms.html" class="nav-link">Terms & Conditions</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <div class="hero-section">
+      <span class="badge badge-privacy">🔒 100% On-Device • Zero Remote Storage</span>
+      <h1 class="hero-title">Trouvé DocDue</h1>
+      <p class="hero-tagline">
+        Find documents you already have. Extract the dates that matter. Never miss a renewal.
+      </p>
+      <div style="margin-top: 24px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <a href="privacy.html" class="badge badge-privacy" style="font-size: 0.95rem; padding: 10px 20px; text-decoration: none;">
+          Read Privacy Policy &rarr;
+        </a>
+        <a href="terms.html" class="badge badge-neutral" style="font-size: 0.95rem; padding: 10px 20px; text-decoration: none;">
+          Read Terms & Conditions &rarr;
+        </a>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Effortless Gallery Discovery</div>
+        <div class="feature-desc">
+          Discovers important personal documents already resting in your photo camera roll so you never have to manually photograph or enter them one by one.
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">100% On-Device OCR</div>
+        <div class="feature-desc">
+          Powered by local Google ML Kit machine learning. Text recognition and date parsing run locally on your phone hardware. Zero cloud APIs.
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Zero-Storage Guarantee</div>
+        <div class="feature-desc">
+          Photos and personal documents are never uploaded to any remote server or third-party database. Non-document images are immediately purged from volatile RAM.
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">⏰</div>
+        <div class="feature-title">Smart Local Reminders</div>
+        <div class="feature-desc">
+          Schedules proactive notifications (30 days, 7 days, 1 day before expiry) using your device's native notification system without remote push servers.
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">🗂️</div>
+        <div class="feature-title">Target Document Support</div>
+        <div class="feature-desc">
+          Intelligently identifies Passports (MRZ), Driving Licences, Motor/Health/Life Insurance policies, Vehicle Registration (RC), and PUC certificates.
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">👤</div>
+        <div class="feature-title">Consent-First Review Vault</div>
+        <div class="feature-desc">
+          Nothing is saved into the database without your explicit inspection and approval. You stay in complete control of your records at all times.
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal Overview -->
+    <div class="card card-highlight">
+      <h2 class="card-title">Legal & Compliance Documentation</h2>
+      <p class="text-paragraph">
+        Trouvé DocDue adheres to the highest privacy and transparency standards. Before accessing core document discovery features, users are required to review and explicitly accept our legal agreements:
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
+        <div style="background: rgba(11, 15, 25, 0.6); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h3 style="color: var(--accent-green); margin-bottom: 8px;">Privacy Policy</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">
+            Full plain-language disclosure of our on-device architecture, zero-storage commitment, and local notification handling.
+          </p>
+          <a href="privacy.html" style="font-weight: 600; font-size: 0.95rem;">Read Full Privacy Policy &rarr;</a>
+        </div>
+
+        <div style="background: rgba(11, 15, 25, 0.6); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h3 style="color: var(--accent-blue); margin-bottom: 8px;">Terms and Conditions</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">
+            Details user rights, assistive OCR technology disclaimers, user verification responsibilities, and limitation of liability.
+          </p>
+          <a href="terms.html" style="font-weight: 600; font-size: 0.95rem;">Read Terms & Conditions &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Open Source & Repository -->
+    <div class="card">
+      <h2 class="card-title">Open Source & Development</h2>
+      <p class="text-paragraph">
+        Trouvé DocDue is an open-source React Native and Expo application built with TypeScript, SQLite, and Google ML Kit.
+      </p>
+      <p class="text-paragraph">
+        View source code, report issues, and contribute on GitHub:
+      </p>
+      <p class="text-paragraph">
+        <a href="https://github.com/nltsravi/trouve-doc-due" target="_blank" rel="noopener noreferrer">
+          https://github.com/nltsravi/trouve-doc-due
+        </a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="index.html">Overview</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="https://github.com/nltsravi/trouve-doc-due" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+    <div>&copy; 2026 Trouvé DocDue. All rights reserved.</div>
+  </footer>
+
+</body>
+</html>

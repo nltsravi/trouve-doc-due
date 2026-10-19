@@ -12,10 +12,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { RecordWithUrgency } from '../../types/record';
 import { getAllRecords, getDashboardStats } from '../../services/storage/recordsRepo';
 import { countPendingCandidates } from '../../services/storage/candidatesRepo';
+import { hasAcceptedTermsAndPrivacy } from '../../services/privacy/consentService';
 import { Colors, Radius, Spacing, Typography } from '../../theme/colors';
 import { RecordCard } from '../../components/common/RecordCard';
 import { Button } from '../../components/common/Button';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ConsentGateModal } from '../../components/common/ConsentGateModal';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -23,6 +25,8 @@ export default function DashboardScreen() {
   const [stats, setStats] = useState({ totalCount: 0, expiringCount: 0, overdueCount: 0, renewalCount: 0 });
   const [pendingCount, setPendingCount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -51,6 +55,16 @@ export default function DashboardScreen() {
     setRefreshing(false);
   };
 
+  const executeWithConsent = async (action: () => void) => {
+    const agreed = await hasAcceptedTermsAndPrivacy();
+    if (!agreed) {
+      setPendingAction(() => action);
+      setShowConsentModal(true);
+      return;
+    }
+    action();
+  };
+
   const urgentRecords = records.filter(
     (r) => r.urgency === 'overdue' || r.urgency === 'expiring_soon'
   );
@@ -77,14 +91,14 @@ export default function DashboardScreen() {
           <Button
             title="Find in Photos"
             icon="scan-outline"
-            onPress={() => router.push('/scan-intro')}
+            onPress={() => executeWithConsent(() => router.push('/scan-intro'))}
             style={styles.heroPrimaryBtn}
           />
           <Button
             title="Add Manual"
             icon="add-outline"
             variant="secondary"
-            onPress={() => router.push('/records/new')}
+            onPress={() => executeWithConsent(() => router.push('/records/new'))}
             style={styles.heroSecondaryBtn}
           />
         </View>
@@ -189,6 +203,18 @@ export default function DashboardScreen() {
             ))
         )}
       </View>
+
+      <ConsentGateModal
+        visible={showConsentModal}
+        onAgree={() => {
+          setShowConsentModal(false);
+          if (pendingAction) {
+            const act = pendingAction;
+            setPendingAction(null);
+            act();
+          }
+        }}
+      />
     </ScrollView>
   );
 }

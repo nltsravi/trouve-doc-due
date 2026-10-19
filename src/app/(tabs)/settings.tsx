@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Alert,
   Share,
+  Linking,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 import { GalleryPermissionState } from '../../types/permission';
 import { getGalleryPermissionState, requestGalleryPermission } from '../../services/gallery/galleryService';
 import {
@@ -241,7 +243,7 @@ export default function SettingsScreen() {
       </View>
 
       {/* About & Legal Section */}
-      <Text style={styles.sectionHeader}>About</Text>
+      <Text style={styles.sectionHeader}>Legal & About</Text>
 
       <View style={styles.cardGroup}>
         <TouchableOpacity
@@ -250,15 +252,56 @@ export default function SettingsScreen() {
           style={styles.settingRow}
         >
           <View style={styles.settingIconWrap}>
-            <Ionicons name="document-text-outline" size={20} color={Colors.dark.text} />
+            <Ionicons name="shield-checkmark-outline" size={20} color={Colors.success} />
           </View>
           <View style={styles.settingTextWrap}>
             <Text style={styles.settingTitle}>Privacy Policy</Text>
             <Text style={styles.settingSubtitle}>
-              Plain language disclosure of data storage and OCR
+              Zero-storage guarantee and on-device processing
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#64748B" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => router.push('/terms' as any)}
+          style={[styles.settingRow, styles.borderTop]}
+        >
+          <View style={styles.settingIconWrap}>
+            <Ionicons name="document-text-outline" size={20} color={Colors.primaryLight} />
+          </View>
+          <View style={styles.settingTextWrap}>
+            <Text style={styles.settingTitle}>Terms & Conditions</Text>
+            <Text style={styles.settingSubtitle}>
+              OCR assistive disclaimer & user responsibilities
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#64748B" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={async () => {
+            const url = 'https://nltsravi.github.io/trouve-doc-due';
+            try {
+              await WebBrowser.openBrowserAsync(url);
+            } catch {
+              await Linking.openURL(url).catch(() => {});
+            }
+          }}
+          style={[styles.settingRow, styles.borderTop]}
+        >
+          <View style={styles.settingIconWrap}>
+            <Ionicons name="globe-outline" size={20} color={Colors.dark.text} />
+          </View>
+          <View style={styles.settingTextWrap}>
+            <Text style={styles.settingTitle}>Legal Portal (GitHub Pages)</Text>
+            <Text style={styles.settingSubtitle}>
+              View public documentation online
+            </Text>
+          </View>
+          <Ionicons name="open-outline" size={16} color="#64748B" />
         </TouchableOpacity>
 
         <View style={[styles.settingRow, styles.borderTop]}>
@@ -268,7 +311,7 @@ export default function SettingsScreen() {
           <View style={styles.settingTextWrap}>
             <Text style={styles.settingTitle}>Trouvé DocDue v1.0.0</Text>
             <Text style={styles.settingSubtitle}>
-              Built with Expo, SQLite, & on-device machine learning
+              100% on-device OCR, SQLite vault & local notifications
             </Text>
           </View>
         </View>

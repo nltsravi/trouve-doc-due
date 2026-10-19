@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Trouvé DocDue</title>
+  <meta name="description" content="Privacy Policy for Trouvé DocDue - 100% on-device OCR document discovery with Zero-Storage Privacy Guarantee.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-link">
+        <div class="brand-icon">🛡️</div>
+        <span>Trouvé DocDue</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Overview</a>
+        <a href="privacy.html" class="nav-link active">Privacy Policy</a>
+        <a href="terms.html" class="nav-link">Terms & Conditions</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <div class="hero-section">
+      <span class="badge badge-privacy">🔒 Zero-Storage Privacy Guarantee</span>
+      <h1 class="hero-title">Privacy Policy</h1>
+      <p class="hero-tagline">
+        Find documents you already have. Extract the dates that matter. Never miss a renewal.
+      </p>
+      <div class="last-updated">Effective Date: October 2026 • Version 1.0</div>
+    </div>
+
+    <div class="callout callout-success">
+      <div style="font-size: 24px;">✨</div>
+      <div>
+        <div class="callout-title">The Zero-Storage Guarantee at a Glance</div>
+        <div class="callout-body">
+          Trouvé DocDue does not operate an application server, cloud database, user account registry, or tracking SDK. All OCR processing and document detection run strictly on your physical device. Your photos and personal document contents are never transmitted across the network or stored apart from your device.
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card">
+      <h2 class="card-title">1. Architecture & Core Philosophy</h2>
+      <p class="text-paragraph">
+        Trouvé DocDue ("we", "our", or "the app") is designed from inception with a local-first, privacy-by-design model. We believe that your personal identity and financial documents—such as passports, driving licences, vehicle registrations, and insurance policies—should remain exclusively in your possession.
+      </p>
+      <p class="text-paragraph">
+        The app operates entirely offline. It does not require account creation, email registration, login credentials, or cloud synchronization.
+      </p>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card">
+      <h2 class="card-title">2. Gallery Inspection & 100% On-Device OCR</h2>
+      <p class="text-paragraph">
+        When you choose to discover documents from your device photo library:
+      </p>
+      <div class="list-item">
+        <strong>Explicit User Consent:</strong> Discovery scanning is only initiated after you explicitly review discovery modes and provide consent.
+      </div>
+      <div class="list-item">
+        <strong>Local Optical Character Recognition (OCR):</strong> Text recognition and classification execute 100% on-device using Google ML Kit on Android and native on-device libraries. No image frames, raw pixels, or recognized text strings are sent to any remote server or third-party AI platform.
+      </div>
+      <div class="list-item">
+        <strong>Immediate Memory Release:</strong> Photos determined not to be relevant documents (e.g., family pictures, landscapes, non-document screenshots) are purged from volatile memory immediately after classification.
+      </div>
+      <div class="list-item">
+        <strong>Read-Only Gallery Access:</strong> Your photo library is treated as strictly read-only. Trouvé DocDue never deletes, modifies, renames, moves, or overwrites your original photos.
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card">
+      <h2 class="card-title">3. Document Detection Targets</h2>
+      <p class="text-paragraph">
+        Our on-device classification models are trained to locate high-priority documents with renewal or expiration timelines:
+      </p>
+      <div class="list-item">
+        <strong>Passports & Visas:</strong> MRZ codes, passport numbers, issuing authority, and expiry dates.
+      </div>
+      <div class="list-item">
+        <strong>Driving Licences:</strong> Licence identifiers, validity/expiry dates, vehicle authorization classes.
+      </div>
+      <div class="list-item">
+        <strong>Insurance Policies & Certificates:</strong> Motor insurance schedules, health insurance cards, life insurance commencement/maturity dates, policy numbers, and renewal due dates.
+      </div>
+      <div class="list-item">
+        <strong>Vehicle Documentation:</strong> Registration certificates (RC), Pollution Under Control (PUC) certificates, and transport permits.
+      </div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card">
+      <h2 class="card-title">4. Consent-Based Document Vault</h2>
+      <p class="text-paragraph">
+        Scanning your library does not automatically add records to your app vault:
+      </p>
+      <div class="list-item">
+        <strong>Review Queue:</strong> Detected documents are presented in an uncommitted review queue where you can inspect extracted dates, correct titles, and verify field values.
+      </div>
+      <div class="list-item">
+        <strong>Approval Gate:</strong> Only documents you explicitly approve are saved into the app's local SQLite database.
+      </div>
+      <div class="list-item">
+        <strong>Rejection & Deletion:</strong> Any candidate you reject is immediately discarded from the temporary cache with no residual trace.
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card">
+      <h2 class="card-title">5. Device Permissions & Geolocation Stance</h2>
+      <p class="text-paragraph">
+        Trouvé DocDue requests only the minimal permissions necessary to perform its functions:
+      </p>
+      <div class="list-item">
+        <strong>Photo Library Permission:</strong> Required solely to read photos during a scan. On Android 13+, granular photo permissions (<code>READ_MEDIA_IMAGES</code>) are utilized.
+      </div>
+      <div class="list-item">
+        <strong>Notification Permission:</strong> Required to deliver local notifications on your device prior to a document's expiry or renewal date.
+      </div>
+      <div class="list-item">
+        <strong>Zero Geolocation Tracking:</strong> We intentionally do not request or use <code>ACCESS_MEDIA_LOCATION</code>. The app does not track where your photos were taken or record your geographic coordinates.
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card">
+      <h2 class="card-title">6. Local Notification Reminders</h2>
+      <p class="text-paragraph">
+        All alerts, expiry alarms, and renewal reminders are scheduled directly through your mobile device's local operating system alarm and notification framework (e.g. Android NotificationManager / iOS UserNotifications). We do not register device push tokens, and no notification payloads pass through remote push servers.
+      </p>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card">
+      <h2 class="card-title">7. Data Ownership, Portability & Complete Erasure</h2>
+      <p class="text-paragraph">
+        Because your data lives only on your device, you have complete sovereignty:
+      </p>
+      <div class="list-item">
+        <strong>Data Export:</strong> You can export all saved document records and reminder metadata at any time in structured JSON format via the Settings menu.
+      </div>
+      <div class="list-item">
+        <strong>Purge Cache:</strong> You can instantly clear uncommitted candidate results with a single tap.
+      </div>
+      <div class="list-item">
+        <strong>Complete Data Erasure:</strong> You can permanently wipe all records, local databases, attachments, and settings directly from the app's Settings screen. Uninstalling the app completely removes all data stored by Trouvé DocDue.
+      </div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="card">
+      <h2 class="card-title">8. Third-Party Analytics & Advertising</h2>
+      <p class="text-paragraph">
+        Trouvé DocDue contains <strong>zero third-party advertising SDKs</strong>, <strong>zero behavioral trackers</strong>, and <strong>zero analytics profiling</strong>. We do not sell, rent, monetize, or share user data under any circumstances.
+      </p>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="card">
+      <h2 class="card-title">9. Contact & Inquiries</h2>
+      <p class="text-paragraph">
+        If you have questions regarding this Privacy Policy or Trouvé DocDue's on-device privacy architecture, please submit an issue on our GitHub repository:
+      </p>
+      <p class="text-paragraph">
+        <a href="https://github.com/nltsravi/trouve-doc-due" target="_blank" rel="noopener noreferrer">https://github.com/nltsravi/trouve-doc-due</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="index.html">Overview</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="https://github.com/nltsravi/trouve-doc-due" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+    <div>&copy; 2026 Trouvé DocDue. 100% On-Device Document Discovery.</div>
+  </footer>
+
+</body>
+</html>

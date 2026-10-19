@@ -130,6 +130,13 @@ export default function RootLayout() {
             presentation: 'modal',
           }}
         />
+        <Stack.Screen
+          name="terms"
+          options={{
+            title: 'Terms & Conditions',
+            presentation: 'modal',
+          }}
+        />
       </Stack>
     </View>
   );
