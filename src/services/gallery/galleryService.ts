@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as Crypto from 'expo-crypto';
@@ -28,34 +29,36 @@ export interface GalleryPageResult {
  */
 export async function getGalleryPermissionState(): Promise<GalleryPermissionState> {
   try {
-    const response = await MediaLibrary.getPermissionsAsync(false);
+    const response = await MediaLibrary.getPermissionsAsync(false, ['photo']);
     return mapMediaLibraryPermission(response);
-  } catch (error) {
-    console.error('[Gallery] Error checking permission:', error);
+  } catch (error: any) {
+    const isExpoGo = error?.message?.includes("Expo Go can no longer provide full access");
     return {
       granted: false,
-      canAskAgain: true,
+      canAskAgain: !isExpoGo,
       accessLevel: 'none',
-      status: 'undetermined',
+      status: 'denied',
+      isExpoGoRestricted: isExpoGo,
     };
   }
 }
 
 /**
- * Requests gallery access permission with read-only scope
+ * Requests gallery access permission with read-only scope for photos only
  */
 export async function requestGalleryPermission(): Promise<GalleryPermissionState> {
   try {
-    // writeOnly = false requests READ permission
-    const response = await MediaLibrary.requestPermissionsAsync(false);
+    // writeOnly = false requests READ permission, ['photo'] requests images only (no audio or video)
+    const response = await MediaLibrary.requestPermissionsAsync(false, ['photo']);
     return mapMediaLibraryPermission(response);
-  } catch (error) {
-    console.error('[Gallery] Error requesting permission:', error);
+  } catch (error: any) {
+    const isExpoGo = error?.message?.includes("Expo Go can no longer provide full access");
     return {
       granted: false,
       canAskAgain: false,
       accessLevel: 'none',
       status: 'denied',
+      isExpoGoRestricted: isExpoGo,
     };
   }
 }
@@ -160,7 +163,17 @@ export async function fetchGalleryPage(
     options.createdAfter = pastDate.getTime();
   }
 
-  const page = await MediaLibrary.getAssetsAsync(options);
+  let page: MediaLibrary.PagedInfo<MediaLibrary.Asset>;
+  try {
+    page = await MediaLibrary.getAssetsAsync(options);
+  } catch {
+    // Media library permission not granted or restricted (e.g. in Expo Go on Android)
+    return {
+      assets: [],
+      hasNextPage: false,
+      totalCount: 0,
+    };
+  }
   const items: GalleryAssetItem[] = [];
 
   for (const asset of page.assets) {
@@ -206,14 +219,26 @@ export async function ensureAssetAccessible(
   assetId: string,
   uri: string
 ): Promise<{ accessible: boolean; localUri: string }> {
+  // On Android, MediaStore assets already have a local content:// or file:// URI.
+  // Calling getAssetInfoAsync on Android attempts to inspect EXIF metadata, which
+  // fails with a SecurityException when ACCESS_MEDIA_LOCATION is not granted.
+  // Android photos from MediaStore are directly accessible via their URI.
+  if (Platform.OS === 'android') {
+    return { accessible: Boolean(uri), localUri: uri };
+  }
+
+  // On iOS, iCloud photos may be stored remotely and require getAssetInfoAsync to resolve localUri
   try {
     const info = await MediaLibrary.getAssetInfoAsync(assetId);
     if (info && info.localUri) {
       return { accessible: true, localUri: info.localUri };
     }
-    // If localUri not provided, test uri
-    return { accessible: true, localUri: uri };
-  } catch (error) {
+    return { accessible: Boolean(uri), localUri: uri };
+  } catch (error: any) {
+    const message = error?.message || String(error);
+    if (message.includes('ACCESS_MEDIA_LOCATION') || message.includes('ExifInterface')) {
+      return { accessible: Boolean(uri), localUri: uri };
+    }
     console.warn(`[Gallery] Asset ${assetId} not accessible locally (possibly cloud-only):`, error);
     return { accessible: false, localUri: uri };
   }

@@ -5,6 +5,7 @@ export interface GalleryPermissionState {
   canAskAgain: boolean;
   accessLevel: GalleryAccessLevel;
   status: 'undetermined' | 'granted' | 'denied' | 'limited';
+  isExpoGoRestricted?: boolean;
 }
 
 export interface NotificationPermissionState {

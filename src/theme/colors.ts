@@ -82,4 +82,5 @@ export const Typography = {
   bodySmall: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
   caption: { fontSize: 11, fontWeight: '500' as const, letterSpacing: 0.2 },
   button: { fontSize: 15, fontWeight: '600' as const },
+  overline: { fontSize: 10, fontWeight: '700' as const, letterSpacing: 0.8, textTransform: 'uppercase' as const },
 };

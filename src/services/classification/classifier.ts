@@ -28,8 +28,10 @@ const DOCUMENT_RULES: TypeRule[] = [
     strongKeywords: [
       /\bpassport\b/i,
       /\bpasseport\b/i,
+      /\bpassport\s*(no\.?|number)\b/i,
+      /\brepublic of [a-z\s]+ passport\b/i,
       /\btype\s*[\/:]\s*p\b/i,
-      /\bp<[a-z]{3}/i, // Machine readable zone
+      /\bp<[a-z0-9]/i, // Machine readable zone
     ],
     weakKeywords: [
       /\bnationality\b/i,
@@ -39,6 +41,7 @@ const DOCUMENT_RULES: TypeRule[] = [
       /\bauthority\b/i,
       /\bsurname\b/i,
       /\bgiven names?\b/i,
+      /\bcountry code\b/i,
     ],
     weight: 1.2,
   },
@@ -48,16 +51,18 @@ const DOCUMENT_RULES: TypeRule[] = [
     defaultTitle: 'Driving Licence',
     strongKeywords: [
       /\bdriving licen[sc]e\b/i,
-      /\bdriver licen[sc]e\b/i,
-      /\bdl\s*no\b/i,
+      /\bdriver['s]?\s*licen[sc]e\b/i,
+      /\bdl\s*(no\.?|number)\b/i,
       /\blicen[sc]e to drive\b/i,
+      /\bmotor vehicle driving\b/i,
     ],
     weakKeywords: [
       /\bclass of vehicle\b/i,
-      /\bvalid till\b/i,
+      /\bvalid (till|until|upto|to)\b/i,
       /\bauthorization to drive\b/i,
       /\btransport vehicle\b/i,
       /\bnon-transport\b/i,
+      /\bdate of issue\b/i,
     ],
     weight: 1.1,
   },
@@ -113,6 +118,8 @@ const DOCUMENT_RULES: TypeRule[] = [
       /\btwo wheeler (package|insurance)\b/i,
       /\bprivate car (package|insurance)\b/i,
       /\bcommercial vehicle (package|insurance)\b/i,
+      /\bcar insurance\b/i,
+      /\bauto insurance\b/i,
     ],
     weakKeywords: [
       /\bpolicy schedule\b/i,
@@ -124,8 +131,10 @@ const DOCUMENT_RULES: TypeRule[] = [
       /\bengine no\b/i,
       /\bperiod of insurance\b/i,
       /\bthird party\b/i,
+      /\bprivate car\b/i,
+      /\bpackage policy\b/i,
     ],
-    weight: 1.2,
+    weight: 1.25,
   },
   {
     type: 'health_insurance',
@@ -147,7 +156,7 @@ const DOCUMENT_RULES: TypeRule[] = [
       /\bpolicy period\b/i,
       /\bdependents?\b/i,
     ],
-    weight: 1.1,
+    weight: 1.15,
   },
   {
     type: 'life_insurance',
@@ -183,6 +192,31 @@ const DOCUMENT_RULES: TypeRule[] = [
       /\bpremises address\b/i,
     ],
     weight: 1.0,
+  },
+  {
+    type: 'financial_certificate',
+    category: 'insurance_finance',
+    defaultTitle: 'Insurance Policy',
+    strongKeywords: [
+      /\binsurance policy\b/i,
+      /\bcertificate of insurance\b/i,
+      /\binsurance certificate\b/i,
+      /\bcomprehensive policy\b/i,
+      /\binsurance coverage\b/i,
+    ],
+    weakKeywords: [
+      /\bgeneral insurance\b/i,
+      /\bpolicy schedule\b/i,
+      /\bperiod of insurance\b/i,
+      /\bpolicy (no\.?|number)\b/i,
+      /\bsum insured\b/i,
+      /\bpremium\b/i,
+      /\bnext renewal\b/i,
+      /\brenewal due\b/i,
+      /\binsured\b/i,
+      /\bexpiry date\b/i,
+    ],
+    weight: 0.95,
   },
 
   // 3. Vehicles

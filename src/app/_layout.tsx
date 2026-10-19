@@ -20,8 +20,12 @@ export default function RootLayout() {
         // Initialize SQLite & apply migrations
         await getDatabase();
 
-        // Reconcile reminders
-        await reconcileNotifications();
+        // Reconcile reminders safely (non-blocking for app launch)
+        try {
+          await reconcileNotifications();
+        } catch (e) {
+          console.warn('[App] Notifications reconciliation skipped:', e);
+        }
 
         setIsReady(true);
       } catch (error: any) {
@@ -85,12 +89,6 @@ export default function RootLayout() {
           options={{
             title: 'Privacy & Photo Access',
             presentation: 'modal',
-          }}
-        />
-        <Stack.Screen
-          name="scan-config"
-          options={{
-            title: 'Scan Configuration',
           }}
         />
         <Stack.Screen

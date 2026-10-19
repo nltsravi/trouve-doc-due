@@ -13,15 +13,19 @@ import { getAllRecords } from '../storage/recordsRepo';
 
 // Configure how notifications appear when app is in foreground
 if (process.env.NODE_ENV !== 'test') {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  });
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      }),
+    });
+  } catch (e) {
+    console.warn('[Notifications] Failed to set notification handler:', e);
+  }
 }
 
 /**

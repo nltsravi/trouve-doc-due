@@ -6,6 +6,13 @@ import { OCRResult, OCRBlock } from './types';
 // Maximum dimension for OCR processing to prevent memory spikes on high-res camera photos
 const MAX_OCR_DIMENSION = 1600;
 
+// Track whether we have warned about ML Kit in Expo Go to avoid repeating per-image logs
+let hasWarnedMLKitUnavailable = false;
+
+export function resetOCRWarningState() {
+  hasWarnedMLKitUnavailable = false;
+}
+
 export interface OCROptions {
   forceResize?: boolean;
   maxDimension?: number;
@@ -71,9 +78,14 @@ export async function runOnDeviceOCR(
         }
       }
     } catch {
-      // In non-native test environments or when ML Kit is unavailable,
-      // return empty structure or mock if test injected
-      console.warn('[OCR] ML Kit native module not available in this environment.');
+      // In non-native test environments or Expo Go where native ML Kit is not compiled,
+      // log once per session to avoid console spam across batch image scans
+      if (!hasWarnedMLKitUnavailable) {
+        hasWarnedMLKitUnavailable = true;
+        console.warn(
+          '[OCR] ML Kit native module is not available in Expo Go. On-device OCR requires a development build (npx expo run:android or npx expo run:ios).'
+        );
+      }
     }
 
     // Split lines from raw text if blocks are not structured

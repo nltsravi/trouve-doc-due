@@ -31,6 +31,9 @@ export default function FindDocsScreen() {
       getLatestScanSessions(5),
     ]);
     setPermission(perm);
+    if (perm.isExpoGoRestricted) {
+      setSelectedMode('selected');
+    }
     setPendingCount(pending);
     setSessions(recentSessions);
   }, []);
@@ -42,7 +45,12 @@ export default function FindDocsScreen() {
   );
 
   const handleStartScan = () => {
-    // Navigate to scan-active with selected mode
+    // If permission has not yet been granted or consented for whole gallery, open the Consent & Privacy screen
+    if (selectedMode !== 'selected' && (!permission || !permission.granted)) {
+      router.push('/scan-intro');
+      return;
+    }
+
     router.push({
       pathname: '/scan-active',
       params: { mode: selectedMode },
@@ -61,7 +69,7 @@ export default function FindDocsScreen() {
       title: 'All Accessible Photos',
       description: 'Scans your camera roll and device photos for personal documents.',
       icon: 'images-outline',
-      badge: 'Recommended',
+      badge: permission?.isExpoGoRestricted ? 'Needs Dev Build' : 'Recommended',
     },
     {
       id: 'selected',
@@ -95,7 +103,7 @@ export default function FindDocsScreen() {
             <Text style={styles.privacyTitle}>100% On-Device & Private</Text>
             {permission && (
               <Badge
-                label={permission.granted ? 'Access Ready' : 'Permission Needed'}
+                label={permission.granted ? 'Access Ready' : 'Consent Needed'}
                 variant={permission.granted ? 'success' : 'neutral'}
                 size="sm"
               />
@@ -103,8 +111,27 @@ export default function FindDocsScreen() {
           </View>
           <Text style={styles.privacyText}>
             Scanning looks through photos on your device using local OCR. No photos or document contents
-            are ever uploaded to any cloud or server.
+            are ever uploaded or stored apart from this device.
           </Text>
+        </View>
+      </View>
+
+      {/* Target Document Types Header */}
+      <View style={styles.targetDocsCard}>
+        <Text style={styles.targetDocsLabel}>AUTOMATICALLY FINDS & EXTRACTS DATES FOR:</Text>
+        <View style={styles.targetDocsRow}>
+          <View style={styles.targetDocChip}>
+            <Ionicons name="airplane-outline" size={15} color={Colors.primaryLight} />
+            <Text style={styles.targetDocText}>Passports (Expiry)</Text>
+          </View>
+          <View style={styles.targetDocChip}>
+            <Ionicons name="card-outline" size={15} color={Colors.primaryLight} />
+            <Text style={styles.targetDocText}>Driving Licences (Validity)</Text>
+          </View>
+          <View style={styles.targetDocChip}>
+            <Ionicons name="shield-outline" size={15} color={Colors.success} />
+            <Text style={styles.targetDocText}>Insurance (Renewal / Expiry)</Text>
+          </View>
         </View>
       </View>
 
@@ -249,6 +276,42 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.dark.textSecondary,
     lineHeight: 16,
+  },
+  targetDocsCard: {
+    backgroundColor: Colors.dark.card,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    marginBottom: Spacing.lg,
+  },
+  targetDocsLabel: {
+    ...Typography.caption,
+    fontWeight: '700',
+    color: Colors.dark.textMuted,
+    letterSpacing: 0.5,
+    marginBottom: Spacing.xs,
+  },
+  targetDocsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
+  },
+  targetDocChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.dark.cardElevated,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  targetDocText: {
+    ...Typography.caption,
+    fontWeight: '600',
+    color: Colors.dark.text,
   },
   reviewBanner: {
     flexDirection: 'row',
