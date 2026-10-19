@@ -1,32 +1,119 @@
-App Name: TroveDocDue
-Primary Tagline: Find. Organize. Never Miss.
+================================================================================
+TroveDocDue — Complete App Store & Google Play Metadata Specification
+================================================================================
 
-Short Description (Google Play - 80 chars max):
-Find important documents in your gallery, track details, and never miss a due date.
+1. App Identification
+--------------------------------------------------------------------------------
+App Title / Name:
+TroveDocDue
 
-Promotional Text (Apple App Store - 170 chars max):
-The intelligent way to organize your life. TroveDocDue scans your photos for vital documents, extracts expiry dates, and sets smart reminders—all under your control.
+Primary Tagline:
+Find. Organize. Never Miss.
 
-Full Description:
-Meet TroveDocDue, your AI-powered personal document assistant. Stop digging through thousands of photos to find your driver's license, passport, or insurance papers.
+Subtitle (App Store - 30 chars max):
+Document Finder & Expiry Alert
+(29 chars)
 
-Key Features:
-• 🔍 Smart Gallery Discovery: Automatically detects personal documents already in your photo library.
-• 🧠 100% On-Device Intelligence: Powered by Google ML Kit OCR running entirely on your smartphone.
-• 🛡️ Zero-Cloud Storage Guarantee: Your photos and personal data NEVER leave your device. No cloud servers, no third-party tracking.
-• ✅ Explicit User Review & Approval: No record is added to your secure local vault until you verify and approve the detected details.
-• ⏰ Intelligent Renewal Reminders: Automatically schedules notification alerts 30, 14, and 7 days before your documents expire.
-• 🔒 Read-Only Photo Access: Your original photos are never modified, moved, or deleted.
+Category:
+Primary: Productivity
+Secondary: Utilities
 
-Supported Documents:
-- Passports & Travel Visas
-- Driver's Licences & National ID Cards
-- Vehicle & Health Insurance Policies
-- Vehicle Registrations & Inspection Certificates
-- Certifications, Memberships & Leases
 
-Privacy Consideration:
-TroveDocDue requires access to your photo gallery solely for the purpose of identifying document images on your device. All processing is strictly local.
+2. Short Descriptions
+--------------------------------------------------------------------------------
+Google Play Short Description (Max 80 characters):
+Find documents in your photos, track expiry dates, and never miss a renewal.
+(76 chars)
 
-Keywords:
-document scanner, ID organizer, expiry reminder, renewal tracker, photo scanner, AI document, wallet, passport tracker, licence renewal, on-device OCR
+Apple App Store Promotional Text (Max 170 characters):
+Find documents already in your photos. TroveDocDue extracts expiry dates and sets smart reminders with 100% on-device AI and a strict zero-cloud privacy guarantee.
+(163 chars)
+
+
+3. Full Store Description (Google Play & Apple App Store - Max 4,000 characters)
+--------------------------------------------------------------------------------
+Find documents you already have. Extract the dates that matter. Never miss a renewal.
+
+Meet TroveDocDue, your intelligent on-device personal document assistant. Stop frantically searching through thousands of camera roll photos to find your driver’s licence expiry date, passport number, or insurance renewal deadline. 
+
+TroveDocDue securely inspects the photos already on your device, recognizes key identity and policy documents, extracts their validity dates using local machine learning, and schedules proactive reminders—all without your data ever leaving your phone.
+
+KEY FEATURES:
+
+🔍 SMART GALLERY DISCOVERY
+Instead of making you manually photograph and upload each document one by one, TroveDocDue scans your accessible photo library to uncover documents you already photographed.
+
+🧠 100% ON-DEVICE OCR INTELLIGENCE
+Powered by Google ML Kit on-device Optical Character Recognition. Text recognition, classification, and date parsing run completely locally on your hardware. No cloud APIs, no remote processing.
+
+🛡️ ZERO-STORAGE PRIVACY GUARANTEE
+Your personal privacy is non-negotiable:
+• Zero Cloud Storage: We operate no remote databases or backend servers.
+• Read-Only Gallery Access: Your photos are never deleted, altered, moved, or overwritten.
+• Immediate RAM Purge: Non-document photos analyzed during a scan are released from device memory immediately.
+• Zero Telemetry: No third-party analytics SDKs, advertising trackers, or user profiling.
+
+✅ YOU'RE ALWAYS IN CONTROL
+Scanning does not automatically import records into your permanent database. Every detected document is placed in an uncommitted review queue. You verify the details, adjust any dates, and explicitly tap "Approve & Save" before anything enters your local vault.
+
+⏰ PROACTIVE RENEWAL REMINDERS
+Never pay a late renewal fee or get caught with an expired licence again. TroveDocDue schedules local notifications:
+• 30 Days Before: Early appointment booking and renewal preparation.
+• 14 Days Before: Urgent reminder to file documents.
+• 7 Days Before: Final alert before deadline.
+
+SUPPORTED DOCUMENTS:
+• Passports & Travel Visas
+• Driver's Licences & National ID Cards
+• Motor, Health & Life Insurance Policies
+• Vehicle Registration Certificates (RC) & Inspection Permits
+• Professional Certifications, Memberships & Leases
+
+DATA OWNERSHIP & FREEDOM:
+You own 100% of your data. Export your vault in structured JSON format anytime, or wipe all records and settings with a single tap.
+
+PERMISSIONS NOTICE:
+TroveDocDue requests photo library access solely to identify document images on your device, and notification access to deliver local renewal alerts. We intentionally do not request geolocation or background location permissions.
+
+
+4. Keywords
+--------------------------------------------------------------------------------
+Apple App Store Keywords (Max 100 characters, comma-separated, no spaces):
+document scanner,id organizer,expiry reminder,renewal tracker,passport,driving licence,insurance
+(97 chars)
+
+Google Play Store Search Terms:
+document scanner, ID card organizer, passport expiry tracker, driving licence renewal, insurance reminder, vehicle RC renewal, OCR receipt scanner, personal vault, expiry date alarm, on-device AI
+
+
+5. Release Notes (Version 1.0.0 Initial Launch)
+--------------------------------------------------------------------------------
+Google Play Store:
+Welcome to TroveDocDue v1.0.0 — Find documents you already have. Extract the dates that matter. Never miss a renewal.
+• 🔍 Smart Gallery Discovery: Identify passports, licences, RC, and insurance in your photos.
+• 🧠 100% On-Device OCR: Powered by local ML Kit with zero cloud uploads.
+• 🛡️ Zero-Storage Guarantee: Photos stay on your device; non-documents discarded from memory.
+• ⏰ Smart Renewal Reminders: 30, 14, and 7-day local notification alerts.
+
+Apple App Store:
+Welcome to the debut release of TroveDocDue!
+• On-Device Discovery: Finds personal documents in your photo library with local machine learning.
+• Instant OCR: Automatically detects document numbers and expiry dates.
+• Explicit Review Vault: Nothing is saved without your explicit review and approval.
+• Smart Reminders: Proactive local notifications 30, 14, and 7 days before expiration.
+• 100% Private: Zero cloud servers, zero trackers, and zero remote data transfers.
+
+
+6. Store URLs & Legal
+--------------------------------------------------------------------------------
+Privacy Policy URL:
+https://nltsravi.github.io/trouve-doc-due/privacy.html
+
+Terms & Conditions URL:
+https://nltsravi.github.io/trouve-doc-due/terms.html
+
+Marketing / Support URL:
+https://nltsravi.github.io/trouve-doc-due/
+
+Support Email:
+ravi@neolumina.in

@@ -1,0 +1,32 @@
+================================================================================
+TroveDocDue — Store Release Notes (v1.0.0 Initial Launch)
+================================================================================
+
+1. Google Play Store — Release Notes (en-US, Max 500 characters)
+--------------------------------------------------------------------------------
+Welcome to TroveDocDue v1.0.0 — Find documents you already have. Extract the dates that matter. Never miss a renewal.
+
+What's New in this launch:
+• 🔍 Smart Gallery Discovery: Automatically identify passports, driver's licences, vehicle RC, and insurance policies in your photos.
+• 🧠 100% On-Device OCR: Powered by local ML Kit with zero cloud uploads.
+• 🛡️ Zero-Storage Guarantee: Photos are read-only; unverified images stay off disk.
+• ⏰ Smart Renewal Reminders: 30, 14, and 7-day local alerts.
+
+(Character count: 489 chars)
+
+
+2. Apple App Store — What's New in Version 1.0.0 (Max 4,000 characters)
+--------------------------------------------------------------------------------
+Welcome to the debut release of TroveDocDue!
+
+Never dig through thousands of camera roll photos to find an expired driver's licence, passport, or insurance renewal date again. TroveDocDue brings intelligent, privacy-first document discovery directly to your device.
+
+Key Features in v1.0.0:
+• On-Device Discovery Scan: Inspect your photo library locally to find personal documents without manual photo uploads.
+• Instant OCR Extraction: Automatically detects document numbers, names, and critical expiry dates using on-device machine learning.
+• Explicit Review Vault: You are always in control. Nothing is stored in your personal encrypted vault until you review and approve it.
+• Smart Expiry Reminders: Automated local alerts 30, 14, and 7 days before your documents expire so you never incur late penalties.
+• Strict Zero-Cloud Guarantee: We don't have servers, user accounts, or tracking SDKs. Your data and photos never leave your iPhone.
+• Flexible Manual Entry: Easily add custom documents, policies, and reminders whenever you need.
+
+We'd love your feedback! Contact us or report issues at https://github.com/nltsravi/trouve-doc-due.
