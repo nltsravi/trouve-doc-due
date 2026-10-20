@@ -104,6 +104,24 @@ export default function DashboardScreen() {
         </View>
       </View>
 
+      {/* Cloud & Drive Discovery Quick Link */}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => executeWithConsent(() => router.push('/(tabs)/scan'))}
+        style={styles.cloudDiscoveryBanner}
+      >
+        <View style={styles.cloudDiscoveryIconWrap}>
+          <Ionicons name="cloud-outline" size={22} color={Colors.primaryLight} />
+        </View>
+        <View style={styles.cloudDiscoveryTextWrap}>
+          <Text style={styles.cloudDiscoveryTitle}>Scan Google Drive, OneDrive & iCloud</Text>
+          <Text style={styles.cloudDiscoverySubtitle}>
+            Scan PDFs & cloud documents with on-device OCR
+          </Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color="#64748B" />
+      </TouchableOpacity>
+
       {/* Review Queue Alert (If unapproved candidates exist) */}
       {pendingCount > 0 && (
         <TouchableOpacity
@@ -358,5 +376,37 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.primaryLight,
     fontWeight: '600',
+  },
+  cloudDiscoveryBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.dark.card,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.25)',
+    marginBottom: Spacing.lg,
+  },
+  cloudDiscoveryIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: Radius.md,
+    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  cloudDiscoveryTextWrap: {
+    flex: 1,
+  },
+  cloudDiscoveryTitle: {
+    ...Typography.bodyMedium,
+    fontWeight: '700',
+    color: Colors.dark.text,
+    marginBottom: 2,
+  },
+  cloudDiscoverySubtitle: {
+    fontSize: 12,
+    color: Colors.dark.textSecondary,
   },
 });
