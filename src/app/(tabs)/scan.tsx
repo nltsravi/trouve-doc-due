@@ -5,12 +5,18 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ScanMode, ScanSession } from '../../types/scan';
 import { GalleryPermissionState } from '../../types/permission';
+import { CloudProviderInfo, CloudScanItem, CLOUD_PROVIDERS } from '../../types/cloud';
 import { getGalleryPermissionState } from '../../services/gallery/galleryService';
+import { pickCloudDocuments } from '../../services/cloud/cloudStorageService';
+import { scanManager } from '../../services/scan/backgroundScanManager';
 import { countPendingCandidates } from '../../services/storage/candidatesRepo';
 import { getLatestScanSessions } from '../../services/storage/sessionsRepo';
 import { hasAcceptedTermsAndPrivacy } from '../../services/privacy/consentService';
@@ -24,6 +30,11 @@ export default function FindDocsScreen() {
   const [selectedMode, setSelectedMode] = useState<ScanMode>('all');
   const [pendingCount, setPendingCount] = useState(0);
   const [sessions, setSessions] = useState<ScanSession[]>([]);
+
+  // Cloud picking state
+  const [isPickingCloud, setIsPickingCloud] = useState(false);
+  const [pickedCloudItems, setPickedCloudItems] = useState<CloudScanItem[] | null>(null);
+  const [activeCloudProvider, setActiveCloudProvider] = useState<CloudProviderInfo | null>(null);
 
   const loadStatus = useCallback(async () => {
     const [perm, pending, recentSessions] = await Promise.all([
@@ -46,14 +57,12 @@ export default function FindDocsScreen() {
   );
 
   const handleStartScan = async () => {
-    // Before scanning or accessing gallery discovery, user must accept Privacy Policy & Terms
     const hasAgreed = await hasAcceptedTermsAndPrivacy();
     if (!hasAgreed) {
       router.push('/scan-intro');
       return;
     }
 
-    // If permission has not yet been granted or consented for whole gallery, open the Consent & Privacy screen
     if (selectedMode !== 'selected' && (!permission || !permission.granted)) {
       router.push('/scan-intro');
       return;
@@ -63,6 +72,51 @@ export default function FindDocsScreen() {
       pathname: '/scan-active',
       params: { mode: selectedMode },
     });
+  };
+
+  const handleSelectCloudProvider = async (provider: CloudProviderInfo) => {
+    const hasAgreed = await hasAcceptedTermsAndPrivacy();
+    if (!hasAgreed) {
+      router.push('/scan-intro');
+      return;
+    }
+
+    try {
+      setIsPickingCloud(true);
+      setActiveCloudProvider(provider);
+
+      const items = await pickCloudDocuments(provider.id);
+      if (items.length > 0) {
+        setPickedCloudItems(items);
+      } else {
+        setActiveCloudProvider(null);
+      }
+    } catch (e: any) {
+      Alert.alert('Error Accessing Files', e?.message || 'Could not access documents.');
+      setActiveCloudProvider(null);
+    } finally {
+      setIsPickingCloud(false);
+    }
+  };
+
+  const handleConfirmCloudScan = () => {
+    if (!pickedCloudItems || pickedCloudItems.length === 0 || !activeCloudProvider) {
+      return;
+    }
+
+    scanManager.setPendingCloudSelection(pickedCloudItems, activeCloudProvider.id);
+    setPickedCloudItems(null);
+    setActiveCloudProvider(null);
+
+    router.push({
+      pathname: '/scan-active',
+      params: { mode: 'cloud' },
+    });
+  };
+
+  const handleCancelCloudScan = () => {
+    setPickedCloudItems(null);
+    setActiveCloudProvider(null);
   };
 
   const SCAN_MODES: {
@@ -118,7 +172,7 @@ export default function FindDocsScreen() {
             )}
           </View>
           <Text style={styles.privacyText}>
-            Scanning looks through photos on your device using local OCR. No photos or document contents
+            Scanning looks through photos and cloud documents using local on-device OCR. No document contents
             are ever uploaded or stored apart from this device.
           </Text>
         </View>
@@ -134,11 +188,11 @@ export default function FindDocsScreen() {
           </View>
           <View style={styles.targetDocChip}>
             <Ionicons name="card-outline" size={15} color={Colors.primaryLight} />
-            <Text style={styles.targetDocText}>Driving Licences (Validity)</Text>
+            <Text style={styles.targetDocText}>Licences (Validity)</Text>
           </View>
           <View style={styles.targetDocChip}>
             <Ionicons name="shield-outline" size={15} color={Colors.success} />
-            <Text style={styles.targetDocText}>Insurance (Renewal / Expiry)</Text>
+            <Text style={styles.targetDocText}>Insurance (Renewals)</Text>
           </View>
         </View>
       </View>
@@ -167,8 +221,50 @@ export default function FindDocsScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Mode Selection */}
-      <Text style={styles.sectionHeading}>Choose Discovery Mode</Text>
+      {/* NEW: Cloud Storage Section */}
+      <View style={styles.cloudSection}>
+        <View style={styles.cloudHeaderRow}>
+          <View>
+            <Text style={styles.sectionHeading}>Cloud & Storage Drives</Text>
+            <Text style={styles.sectionSubheading}>
+              Search Google Drive, OneDrive, iCloud, Dropbox, TeraBox & PDF files
+            </Text>
+          </View>
+          <Badge label="New" variant="primary" size="sm" />
+        </View>
+
+        <View style={styles.cloudGrid}>
+          {CLOUD_PROVIDERS.map((provider) => (
+            <TouchableOpacity
+              key={provider.id}
+              activeOpacity={0.75}
+              onPress={() => handleSelectCloudProvider(provider)}
+              style={styles.cloudCard}
+            >
+              <View style={[styles.cloudIconWrap, { backgroundColor: `${provider.accentColor}15` }]}>
+                <Ionicons name={provider.icon} size={24} color={provider.accentColor} />
+              </View>
+              <View style={styles.cloudCardContent}>
+                <Text style={styles.cloudCardTitle}>{provider.name}</Text>
+                <Text style={styles.cloudCardTagline} numberOfLines={1}>
+                  {provider.tagline}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#64748B" />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.cloudFooterHint}>
+          <Ionicons name="information-circle-outline" size={15} color="#94A3B8" />
+          <Text style={styles.cloudFooterHintText}>
+            Supports images & multi-page PDFs. Leave the app while it scans; get notified on completion.
+          </Text>
+        </View>
+      </View>
+
+      {/* Mode Selection for Device Gallery */}
+      <Text style={styles.sectionHeading}>Device Photo Discovery</Text>
 
       {SCAN_MODES.map((mode) => {
         const isSelected = selectedMode === mode.id;
@@ -208,7 +304,7 @@ export default function FindDocsScreen() {
 
       {/* Primary Action Button */}
       <Button
-        title={`Start Scanning (${selectedMode === 'all' ? 'All Photos' : selectedMode === 'selected' ? 'Select Photos' : selectedMode === 'screenshots' ? 'Screenshots' : 'Recent'})`}
+        title={`Scan Photos (${selectedMode === 'all' ? 'All Photos' : selectedMode === 'selected' ? 'Select Photos' : selectedMode === 'screenshots' ? 'Screenshots' : 'Recent'})`}
         icon="scan-circle-outline"
         size="lg"
         onPress={handleStartScan}
@@ -227,7 +323,7 @@ export default function FindDocsScreen() {
                   {new Date(sess.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </Text>
                 <Text style={styles.historyMeta}>
-                  Examined {sess.processedCount} photos • Found {sess.detectedCount} documents
+                  {sess.scanMode === 'cloud' ? 'Cloud Scan' : 'Gallery Scan'} • Examined {sess.processedCount} items • Found {sess.detectedCount} documents
                 </Text>
               </View>
               <Badge
@@ -238,6 +334,106 @@ export default function FindDocsScreen() {
             </View>
           ))}
         </View>
+      )}
+
+      {/* Cloud Selection Confirmation Modal */}
+      <Modal
+        visible={!!pickedCloudItems && pickedCloudItems.length > 0}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleCancelCloudScan}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <View style={[styles.modalIconWrap, { backgroundColor: `${activeCloudProvider?.accentColor || '#3B82F6'}20` }]}>
+                <Ionicons
+                  name={activeCloudProvider?.icon || 'cloud'}
+                  size={28}
+                  color={activeCloudProvider?.accentColor || Colors.primaryLight}
+                />
+              </View>
+              <View style={styles.modalHeaderTextWrap}>
+                <Text style={styles.modalTitle}>
+                  {activeCloudProvider?.name || 'Cloud Storage'}
+                </Text>
+                <Text style={styles.modalSubtitle}>
+                  Ready to scan {pickedCloudItems?.length || 0} selected document{pickedCloudItems?.length === 1 ? '' : 's'}
+                </Text>
+              </View>
+            </View>
+
+            {/* Document Breakdown */}
+            <View style={styles.breakdownCard}>
+              <View style={styles.breakdownRow}>
+                <View style={styles.breakdownItem}>
+                  <Text style={styles.breakdownNumber}>
+                    {pickedCloudItems?.filter((i) => i.isPdf).length || 0}
+                  </Text>
+                  <Text style={styles.breakdownLabel}>PDF Files</Text>
+                </View>
+                <View style={styles.breakdownDivider} />
+                <View style={styles.breakdownItem}>
+                  <Text style={styles.breakdownNumber}>
+                    {pickedCloudItems?.filter((i) => !i.isPdf).length || 0}
+                  </Text>
+                  <Text style={styles.breakdownLabel}>Images / Scans</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Privacy & Background Notice */}
+            <View style={styles.modalNoticeBox}>
+              <View style={styles.modalNoticeRow}>
+                <Ionicons name="shield-checkmark" size={16} color={Colors.success} />
+                <Text style={styles.modalNoticeText}>
+                  100% on-device OCR. No file contents leave your phone.
+                </Text>
+              </View>
+              <View style={styles.modalNoticeRow}>
+                <Ionicons name="trash-outline" size={16} color={Colors.primaryLight} />
+                <Text style={styles.modalNoticeText}>
+                  Non-documents are purged from memory immediately.
+                </Text>
+              </View>
+              <View style={styles.modalNoticeRow}>
+                <Ionicons name="notifications-outline" size={16} color={Colors.warning} />
+                <Text style={styles.modalNoticeText}>
+                  Runs in background. You will receive a notification when finished.
+                </Text>
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.modalActions}>
+              <Button
+                title="Cancel"
+                variant="secondary"
+                onPress={handleCancelCloudScan}
+                style={styles.modalCancelBtn}
+              />
+              <Button
+                title="Start Background Scan"
+                icon="play"
+                variant="primary"
+                onPress={handleConfirmCloudScan}
+                style={styles.modalConfirmBtn}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Loading Modal while file picker prepares */}
+      {isPickingCloud && (
+        <Modal transparent={true} visible={isPickingCloud}>
+          <View style={styles.loadingOverlay}>
+            <View style={styles.loadingBox}>
+              <ActivityIndicator size="large" color={Colors.primaryLight} />
+              <Text style={styles.loadingText}>Opening Storage Picker...</Text>
+            </View>
+          </View>
+        </Modal>
       )}
     </ScrollView>
   );
@@ -258,15 +454,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.25)',
+    borderColor: 'rgba(34, 197, 94, 0.25)',
     marginBottom: Spacing.lg,
     alignItems: 'center',
   },
   shieldIconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: Colors.successLight,
+    width: 44,
+    height: 44,
+    borderRadius: Radius.md,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -275,13 +471,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   privacyTitle: {
-    ...Typography.bodyMedium,
+    fontSize: Typography.bodyMedium.fontSize,
     fontWeight: '700',
     color: Colors.dark.text,
-    marginBottom: 2,
   },
   privacyText: {
-    ...Typography.caption,
+    fontSize: 12,
     color: Colors.dark.textSecondary,
     lineHeight: 16,
   },
@@ -294,10 +489,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   targetDocsLabel: {
-    ...Typography.caption,
+    fontSize: 10,
     fontWeight: '700',
     color: Colors.dark.textMuted,
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
     marginBottom: Spacing.xs,
   },
   targetDocsRow: {
@@ -308,69 +503,134 @@ const styles = StyleSheet.create({
   targetDocChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     backgroundColor: Colors.dark.cardElevated,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderRadius: Radius.sm,
+    gap: 4,
   },
   targetDocText: {
-    ...Typography.caption,
-    fontWeight: '600',
+    fontSize: 11,
     color: Colors.dark.text,
+    fontWeight: '500',
   },
   reviewBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(37, 99, 235, 0.12)',
     borderRadius: Radius.lg,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.primaryLight,
-    marginBottom: Spacing.lg,
+    borderColor: Colors.primary,
+    marginBottom: Spacing.xl,
+    justifyContent: 'space-between',
   },
   reviewTextWrap: {
     flex: 1,
-    marginRight: Spacing.sm,
+    marginRight: Spacing.md,
   },
   reviewTitle: {
-    ...Typography.bodyMedium,
+    fontSize: Typography.bodyMedium.fontSize,
     fontWeight: '700',
-    color: Colors.dark.text,
+    color: Colors.primaryLight,
+    marginBottom: 2,
   },
   reviewSubtitle: {
-    ...Typography.caption,
+    fontSize: 12,
     color: Colors.dark.textSecondary,
-    marginTop: 2,
   },
   reviewBtn: {
-    paddingHorizontal: 14,
+    minWidth: 80,
   },
   sectionHeading: {
-    ...Typography.h3,
+    fontSize: Typography.h3.fontSize,
+    fontWeight: '700',
     color: Colors.dark.text,
+    marginBottom: Spacing.xs,
+  },
+  sectionSubheading: {
+    fontSize: 12,
+    color: Colors.dark.textSecondary,
     marginBottom: Spacing.md,
-    marginTop: Spacing.xs,
+  },
+  cloudSection: {
+    marginBottom: Spacing.xl,
+    backgroundColor: Colors.dark.card,
+    borderRadius: Radius.xl,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  cloudHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  cloudGrid: {
+    gap: Spacing.sm,
+  },
+  cloudCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.dark.cardElevated,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  cloudIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  cloudCardContent: {
+    flex: 1,
+  },
+  cloudCardTitle: {
+    fontSize: Typography.bodyMedium.fontSize,
+    fontWeight: '600',
+    color: Colors.dark.text,
+    marginBottom: 2,
+  },
+  cloudCardTagline: {
+    fontSize: 12,
+    color: Colors.dark.textSecondary,
+  },
+  cloudFooterHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.md,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: Colors.dark.border,
+  },
+  cloudFooterHintText: {
+    flex: 1,
+    fontSize: 11,
+    color: '#94A3B8',
+    lineHeight: 15,
   },
   modeCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.dark.card,
     borderRadius: Radius.lg,
-    borderWidth: 1.5,
-    borderColor: Colors.dark.border,
     padding: Spacing.md,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
   },
   modeCardSelected: {
-    borderColor: Colors.primaryLight,
+    borderColor: Colors.primary,
     backgroundColor: 'rgba(37, 99, 235, 0.08)',
   },
   modeIconWrap: {
-    width: 38,
-    height: 38,
+    width: 40,
+    height: 40,
     borderRadius: Radius.md,
     backgroundColor: Colors.dark.cardElevated,
     alignItems: 'center',
@@ -384,20 +644,19 @@ const styles = StyleSheet.create({
   modeTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.xs,
     marginBottom: 2,
   },
   modeTitle: {
-    ...Typography.bodyMedium,
+    fontSize: Typography.bodyMedium.fontSize,
     fontWeight: '600',
     color: Colors.dark.text,
   },
   modeTitleSelected: {
     color: Colors.primaryLight,
-    fontWeight: '700',
   },
   modeDescription: {
-    ...Typography.caption,
+    fontSize: 12,
     color: Colors.dark.textSecondary,
     lineHeight: 16,
   },
@@ -406,25 +665,25 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#64748B',
+    borderColor: '#475569',
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioCircleSelected: {
-    borderColor: Colors.primaryLight,
+    borderColor: Colors.primary,
   },
   radioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.primary,
   },
   scanBtn: {
     marginTop: Spacing.md,
     marginBottom: Spacing.xl,
   },
   historySection: {
-    marginTop: Spacing.lg,
+    marginTop: Spacing.md,
   },
   historyItem: {
     flexDirection: 'row',
@@ -433,7 +692,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.card,
     borderRadius: Radius.md,
     padding: Spacing.md,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
     borderWidth: 1,
     borderColor: Colors.dark.border,
   },
@@ -442,13 +701,133 @@ const styles = StyleSheet.create({
     marginRight: Spacing.sm,
   },
   historyDate: {
-    ...Typography.bodyMedium,
+    fontSize: 13,
     fontWeight: '600',
     color: Colors.dark.text,
+    marginBottom: 2,
   },
   historyMeta: {
-    ...Typography.caption,
+    fontSize: 12,
+    color: Colors.dark.textSecondary,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    justifyContent: 'flex-end',
+  },
+  modalCard: {
+    backgroundColor: Colors.dark.card,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    padding: Spacing.xl,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  modalIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  modalHeaderTextWrap: {
+    flex: 1,
+  },
+  modalTitle: {
+    fontSize: Typography.h2.fontSize,
+    fontWeight: '700',
+    color: Colors.dark.text,
+    marginBottom: 2,
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    color: Colors.dark.textSecondary,
+  },
+  breakdownCard: {
+    backgroundColor: Colors.dark.cardElevated,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  breakdownRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  breakdownItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  breakdownDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: Colors.dark.border,
+  },
+  breakdownNumber: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.primaryLight,
+  },
+  breakdownLabel: {
+    fontSize: 11,
     color: Colors.dark.textSecondary,
     marginTop: 2,
+    textTransform: 'uppercase',
+  },
+  modalNoticeBox: {
+    backgroundColor: '#0F172A',
+    borderRadius: Radius.md,
+    padding: Spacing.md,
+    gap: Spacing.xs,
+    marginBottom: Spacing.xl,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  modalNoticeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  modalNoticeText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#94A3B8',
+    lineHeight: 16,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  modalCancelBtn: {
+    flex: 1,
+  },
+  modalConfirmBtn: {
+    flex: 2,
+  },
+  loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingBox: {
+    backgroundColor: Colors.dark.card,
+    borderRadius: Radius.lg,
+    padding: Spacing.xl,
+    alignItems: 'center',
+    gap: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: Colors.dark.text,
   },
 });

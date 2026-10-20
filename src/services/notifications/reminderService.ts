@@ -221,3 +221,52 @@ export async function reconcileNotifications(): Promise<void> {
     }
   }
 }
+
+/**
+ * Dispatches an immediate local notification when a background or cloud scan finishes.
+ */
+export async function notifyScanCompleted(
+  sessionId: string,
+  processedCount: number,
+  detectedCount: number,
+  sourceLabel: string = 'Storage scan'
+): Promise<void> {
+  try {
+    const hasPermission = await getNotificationPermissionStatus();
+    if (!hasPermission) {
+      const granted = await requestNotificationPermission();
+      if (!granted) return;
+    }
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('scan-updates', {
+        name: 'Scan & Discovery Updates',
+        importance: AndroidImportance.HIGH,
+        vibrationPattern: [0, 250, 150, 250],
+        lightColor: '#2563EB',
+      });
+    }
+
+    const title = detectedCount > 0 ? 'Document Discovery Complete' : 'Scan Finished';
+    const body =
+      detectedCount > 0
+        ? `Found ${detectedCount} potential document${detectedCount > 1 ? 's' : ''} in ${sourceLabel}. Tap to review details.`
+        : `Scanned ${processedCount} item${processedCount > 1 ? 's' : ''} in ${sourceLabel}. No new expiry dates found.`;
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        data: {
+          sessionId,
+          type: 'scan_complete',
+          url: '/review',
+        },
+        sound: true,
+      },
+      trigger: null,
+    });
+  } catch (error) {
+    console.warn('[Notifications] Failed to send scan complete notification:', error);
+  }
+}

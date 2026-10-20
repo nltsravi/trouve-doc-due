@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Notifications from 'expo-notifications';
 import { getDatabase } from '../services/storage/database';
 import { reconcileNotifications } from '../services/notifications/reminderService';
 import { Colors } from '../theme/colors';
@@ -11,6 +12,7 @@ import { Colors } from '../theme/colors';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
+  const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
 
@@ -38,6 +40,23 @@ export default function RootLayout() {
 
     initializeApp();
   }, []);
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      if (data?.url) {
+        try {
+          router.push(data.url as any);
+        } catch (e) {
+          console.warn('[App] Failed to route from notification:', e);
+        }
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [router]);
 
   if (!isReady && !initError) {
     return (

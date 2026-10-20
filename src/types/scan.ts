@@ -1,6 +1,7 @@
 import { CandidateDate, DocumentCategory, DocumentType, ExtractedFields, ConfidenceScores } from './document';
+import { CloudScanItem, CloudProviderType } from './cloud';
 
-export type ScanMode = 'all' | 'selected' | 'screenshots' | 'recent';
+export type ScanMode = 'all' | 'selected' | 'screenshots' | 'recent' | 'cloud';
 
 export type ScanSessionStatus = 'idle' | 'running' | 'paused' | 'completed' | 'cancelled' | 'failed';
 
@@ -43,6 +44,7 @@ export interface ScanProgress {
   detectedCount: number;
   skippedCount: number;
   currentAssetUri?: string | null;
+  currentAssetTitle?: string | null;
   error?: string | null;
 }
 
@@ -51,4 +53,6 @@ export interface ScanFilterConfig {
   maxScanCount?: number;
   recentMonths?: number;
   includeScreenshotsOnly?: boolean;
+  cloudItems?: CloudScanItem[];
+  cloudProvider?: CloudProviderType;
 }

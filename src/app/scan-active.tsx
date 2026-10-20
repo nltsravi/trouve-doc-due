@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { ScanMode, ScanProgress } from '../types/scan';
-import { executeGalleryScan, ScannerController } from '../services/scan/scannerService';
+import { scanManager } from '../services/scan/backgroundScanManager';
 import { Colors, Radius, Spacing, Typography } from '../theme/colors';
 import { ProgressBar } from '../components/common/ProgressBar';
 import { Button } from '../components/common/Button';
@@ -14,7 +14,6 @@ export default function ScanActiveScreen() {
   const params = useLocalSearchParams<{ mode?: string }>();
   const scanMode: ScanMode = (params.mode as ScanMode) || 'all';
 
-  const controllerRef = useRef(new ScannerController());
   const [progress, setProgress] = useState<ScanProgress>({
     sessionId: '',
     status: 'running',
@@ -23,27 +22,46 @@ export default function ScanActiveScreen() {
     detectedCount: 0,
     skippedCount: 0,
     currentAssetUri: null,
+    currentAssetTitle: null,
   });
   const [isPaused, setIsPaused] = useState(false);
+  const scanStartedRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
-    const controller = controllerRef.current;
+
+    if (scanStartedRef.current) return;
+    scanStartedRef.current = true;
+
+    // Subscribe to scan manager progress
+    const unsubscribe = scanManager.subscribe((prog) => {
+      if (isMounted) {
+        setProgress(prog);
+      }
+    });
 
     async function runScan() {
       try {
-        await executeGalleryScan(
-          {
+        if (scanMode === 'cloud') {
+          const cloudSelection = scanManager.getPendingCloudSelection();
+          if (!cloudSelection || cloudSelection.items.length === 0) {
+            Alert.alert('No Files Selected', 'No cloud documents were selected to scan.', [
+              { text: 'OK', onPress: () => router.replace('/(tabs)/scan') },
+            ]);
+            return;
+          }
+
+          await scanManager.startScan({
+            scanMode: 'cloud',
+            cloudItems: cloudSelection.items,
+            cloudProvider: cloudSelection.provider,
+          });
+        } else {
+          await scanManager.startScan({
             scanMode,
             maxScanCount: 150,
-          },
-          controller,
-          (prog) => {
-            if (isMounted) {
-              setProgress(prog);
-            }
-          }
-        );
+          });
+        }
 
         if (isMounted) {
           router.replace('/review');
@@ -60,12 +78,14 @@ export default function ScanActiveScreen() {
 
     return () => {
       isMounted = false;
-      controller.cancel();
+      unsubscribe();
     };
   }, [scanMode, router]);
 
   const togglePause = () => {
-    const controller = controllerRef.current;
+    const controller = scanManager.controller;
+    if (!controller) return;
+
     if (isPaused) {
       controller.resume();
       setIsPaused(false);
@@ -76,18 +96,55 @@ export default function ScanActiveScreen() {
   };
 
   const handleStopAndReview = () => {
-    controllerRef.current.cancel();
+    scanManager.cancelActiveScan();
     router.replace('/review');
   };
 
-  const total = progress.totalAssets || 50;
+  const handleRunInBackground = () => {
+    Alert.alert(
+      'Scanning in Background',
+      'The scan will continue processing your documents. You can safely switch apps or lock your phone.\n\nWe will send you a notification as soon as the scan finishes!',
+      [
+        {
+          text: 'Leave App',
+          onPress: () => router.replace('/(tabs)'),
+        },
+        {
+          text: 'Stay on Screen',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const total = progress.totalAssets || (scanMode === 'cloud' ? 10 : 50);
   const progressRatio = Math.min(1, progress.processedCount / Math.max(1, total));
+  const isPdf =
+    progress.currentAssetTitle?.toLowerCase().endsWith('.pdf') ||
+    progress.currentAssetUri?.toLowerCase().endsWith('.pdf');
 
   return (
     <View style={styles.container}>
-      {/* Current Photo Preview / Radar */}
+      {/* Background Mode Floating Quick Action */}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={handleRunInBackground}
+        style={styles.backgroundBadge}
+      >
+        <Ionicons name="notifications-outline" size={16} color={Colors.primaryLight} />
+        <Text style={styles.backgroundBadgeText}>Run in Background & Notify</Text>
+      </TouchableOpacity>
+
+      {/* Current Photo / Document Preview Radar */}
       <View style={styles.previewContainer}>
-        {progress.currentAssetUri ? (
+        {isPdf ? (
+          <View style={[styles.previewImage, styles.pdfPreview]}>
+            <Ionicons name="document-text" size={56} color={Colors.primaryLight} />
+            <Text style={styles.pdfBadgeText} numberOfLines={2}>
+              {progress.currentAssetTitle || 'PDF Document'}
+            </Text>
+          </View>
+        ) : progress.currentAssetUri ? (
           <Image
             source={{ uri: progress.currentAssetUri }}
             style={styles.previewImage}
@@ -96,7 +153,11 @@ export default function ScanActiveScreen() {
           />
         ) : (
           <View style={[styles.previewImage, styles.placeholderPreview]}>
-            <Ionicons name="scan" size={48} color={Colors.primaryLight} />
+            <Ionicons
+              name={scanMode === 'cloud' ? 'cloud-download-outline' : 'scan'}
+              size={48}
+              color={Colors.primaryLight}
+            />
           </View>
         )}
 
@@ -105,10 +166,16 @@ export default function ScanActiveScreen() {
 
       {/* Progress Metric Header */}
       <Text style={styles.statusTitle}>
-        {isPaused ? 'Scan Paused' : 'Analyzing Accessible Photos...'}
+        {isPaused
+          ? 'Scan Paused'
+          : scanMode === 'cloud'
+          ? 'Analyzing Cloud Documents...'
+          : 'Analyzing Accessible Photos...'}
       </Text>
-      <Text style={styles.statusSubtitle}>
-        Running on-device OCR and document classification
+      <Text style={styles.statusSubtitle} numberOfLines={1}>
+        {progress.currentAssetTitle
+          ? `Processing ${progress.currentAssetTitle}`
+          : 'Running on-device OCR and document classification'}
       </Text>
 
       {/* Progress Bar */}
@@ -159,8 +226,20 @@ export default function ScanActiveScreen() {
         />
       </View>
 
+      {/* Background Notification Advice */}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={handleRunInBackground}
+        style={styles.backgroundHintBtn}
+      >
+        <Ionicons name="exit-outline" size={18} color="#94A3B8" />
+        <Text style={styles.backgroundHintText}>
+          {"You can safely leave the app. We'll send a notification when finished."}
+        </Text>
+      </TouchableOpacity>
+
       <Text style={styles.disclaimerText}>
-        Photos stay on your phone. Nothing is imported until you review and approve.
+        100% on-device processing. Non-document files are purged from memory immediately.
       </Text>
     </View>
   );
@@ -174,6 +253,23 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     justifyContent: 'center',
   },
+  backgroundBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(37, 99, 235, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(37, 99, 235, 0.3)',
+    marginBottom: Spacing.lg,
+  },
+  backgroundBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.primaryLight,
+  },
   previewContainer: {
     width: 180,
     height: 220,
@@ -182,7 +278,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.card,
     borderWidth: 2,
     borderColor: Colors.primaryLight,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
     position: 'relative',
     elevation: 8,
   },
@@ -195,6 +291,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.dark.cardElevated,
   },
+  pdfPreview: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F172A',
+    padding: Spacing.md,
+  },
+  pdfBadgeText: {
+    marginTop: Spacing.sm,
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#94A3B8',
+    textAlign: 'center',
+  },
   scanLine: {
     position: 'absolute',
     top: '45%',
@@ -205,23 +314,24 @@ const styles = StyleSheet.create({
     shadowColor: Colors.primaryLight,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.9,
-    shadowRadius: 6,
+    shadowRadius: 8,
   },
   statusTitle: {
-    ...Typography.h2,
+    fontSize: Typography.h3.fontSize,
+    fontWeight: '700',
     color: Colors.dark.text,
     textAlign: 'center',
     marginBottom: 4,
   },
   statusSubtitle: {
-    ...Typography.caption,
+    fontSize: Typography.bodySmall.fontSize,
     color: Colors.dark.textSecondary,
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
+    maxWidth: 280,
   },
   progressWrap: {
     width: '100%',
-    maxWidth: 320,
     marginBottom: Spacing.xl,
   },
   statsCard: {
@@ -229,13 +339,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.dark.card,
     borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.dark.border,
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xl,
     width: '100%',
-    maxWidth: 340,
     marginBottom: Spacing.xl,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
   },
   statCol: {
     flex: 1,
@@ -243,33 +352,49 @@ const styles = StyleSheet.create({
   },
   statDivider: {
     width: 1,
-    height: 36,
+    height: 32,
     backgroundColor: Colors.dark.border,
   },
   statNumber: {
-    ...Typography.h2,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
     color: Colors.dark.text,
   },
   statLabel: {
-    ...Typography.caption,
+    fontSize: 11,
     color: Colors.dark.textSecondary,
     marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   controlsRow: {
     flexDirection: 'row',
     gap: Spacing.md,
     width: '100%',
-    maxWidth: 340,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   controlBtn: {
     flex: 1,
   },
+  backgroundHintBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  backgroundHintText: {
+    fontSize: 12,
+    color: '#94A3B8',
+    textAlign: 'center',
+  },
   disclaimerText: {
-    ...Typography.caption,
+    fontSize: 11,
     color: Colors.dark.textMuted,
     textAlign: 'center',
-    maxWidth: 280,
+    maxWidth: 300,
+    lineHeight: 16,
   },
 });

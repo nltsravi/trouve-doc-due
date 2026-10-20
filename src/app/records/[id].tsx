@@ -117,11 +117,20 @@ export default function RecordDetailScreen() {
       {record.attachmentPath && (
         <View style={styles.attachmentCard}>
           <Text style={styles.sectionHeading}>Saved Document Copy</Text>
-          <Image
-            source={{ uri: record.attachmentPath }}
-            style={styles.attachmentImage}
-            contentFit="contain"
-          />
+          {record.attachmentPath.toLowerCase().endsWith('.pdf') ? (
+            <View style={{ alignItems: 'center', justifyContent: 'center', padding: Spacing.xl, backgroundColor: '#0F172A', borderRadius: Radius.md, marginTop: Spacing.sm }}>
+              <Ionicons name="document-text" size={56} color={Colors.primaryLight} />
+              <Text style={{ color: '#94A3B8', marginTop: 8, fontSize: 13, fontWeight: '600' }}>
+                PDF Document Copy
+              </Text>
+            </View>
+          ) : (
+            <Image
+              source={{ uri: record.attachmentPath }}
+              style={styles.attachmentImage}
+              contentFit="contain"
+            />
+          )}
         </View>
       )}
 

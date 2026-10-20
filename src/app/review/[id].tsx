@@ -225,7 +225,9 @@ export default function ReviewCandidateDetailScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Photo Preview & Source Metadata */}
       <View style={styles.imageCard}>
-        {candidate.sourceAssetUri ? (
+        {candidate.sourceAssetUri &&
+        !candidate.sourceAssetUri.toLowerCase().endsWith('.pdf') &&
+        !candidate.title.toLowerCase().endsWith('.pdf') ? (
           <Image
             source={{ uri: candidate.sourceAssetUri }}
             style={styles.sourceImage}
@@ -233,7 +235,10 @@ export default function ReviewCandidateDetailScreen() {
           />
         ) : (
           <View style={[styles.sourceImage, styles.imagePlaceholder]}>
-            <Ionicons name="document-text" size={48} color="#64748B" />
+            <Ionicons name="document-text" size={56} color={Colors.primaryLight} />
+            <Text style={{ color: '#94A3B8', marginTop: 8, fontSize: 13, fontWeight: '600' }}>
+              PDF Document
+            </Text>
           </View>
         )}
 
